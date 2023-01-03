@@ -18,39 +18,12 @@ public class Main {
     PrintWriter out = new PrintWriter("out.txt", StandardCharsets.UTF_8);
 
     int n;
-    int m;
-    int k;
-    int x;
-    int y;
     int numCase = 1;
-    int[] outPizza;
 
     while (in.hasNextInt()) {
       n = in.nextInt();
       if (n == 0) break;
-      m = in.nextInt();
-      k = in.nextInt();
-
-      int[][] city = new int[n][m];
-      Pizzeria[] pizzerias = new Pizzeria[k];
-
-      for (var c : city) Arrays.fill(c, -1);
-      for (int i = 0; i < k; ++i) {
-        x = in.nextInt() - 1;
-        y = in.nextInt() - 1;
-        pizzerias[i] = new Pizzeria(x, y, i, in.nextInt());
-        city[x][y] = i;
-      }
-
-      fill(city, pizzerias);
-
-      out.write("case " + numCase + ":\n");
-      for (int i = 0; i < pizzerias.length; ++i) {
-        outPizza = routePizzeria(city, pizzerias[i]);
-        for (int dir = 0; dir < 4; ++dir) out.write(outPizza[dir] + " ");
-        out.write("\n");
-      }
-      out.write("\n");
+      fill(in, out, n, in.nextInt(), in.nextInt(), numCase);
       ++numCase;
     }
     out.flush();
@@ -264,14 +237,41 @@ public class Main {
   /**
    * метод заполнения, заполняет всегда блоки, с единстенным вариантом пиццерий,
    * затем, только блоки с несколькими вариантами
-   * @param city
-   * @param pizzerias*/
-  public static void fill(int[][] city, Pizzeria[] pizzerias) {
+   * @param in поток ввода
+   * @param out поток вывода
+   * @param n количество строк блоков
+   * @param m количество столбцов блоков
+   * @param k количество пиццерий
+   * @param numCase номер случая*/
+  public static void fill(Scanner in, PrintWriter out, int n, int m, int k, int numCase) {
+    int x;
+    int y;
+    int[] outPizza;
+
+    int[][] city = new int[n][m];
+    Pizzeria[] pizzerias = new Pizzeria[k];
+
+    for (var c : city) Arrays.fill(c, -1);
+    for (int i = 0; i < k; ++i) {
+      x = in.nextInt() - 1;
+      y = in.nextInt() - 1;
+      pizzerias[i] = new Pizzeria(x, y, i, in.nextInt());
+      city[x][y] = i;
+    }
+
     boolean currentFlag = true;
     while (currentFlag) {
       currentFlag = simpleFill(city, pizzerias);
       if (!currentFlag) currentFlag = hardFill(city, pizzerias);
     }
+
+    out.write("case " + numCase + ":\n");
+    for (Pizzeria pizzeria : pizzerias) {
+      outPizza = routePizzeria(city, pizzeria);
+      for (int dir = 0; dir < 4; ++dir) out.write(outPizza[dir] + " ");
+      out.write("\n");
+    }
+    out.write("\n");
   }
 
   /**
